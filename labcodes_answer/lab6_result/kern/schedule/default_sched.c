@@ -40,6 +40,7 @@ stride_init(struct run_queue *rq) {
      list_init(&(rq->run_list));
      rq->lab6_run_pool = NULL;
      rq->proc_num = 0;
+    cprintf("run_pool init\n");
 }
 
 /*
@@ -61,6 +62,7 @@ stride_enqueue(struct run_queue *rq, struct proc_struct *proc) {
 #if USE_SKEW_HEAP
      rq->lab6_run_pool =
           skew_heap_insert(rq->lab6_run_pool, &(proc->lab6_run_pool), proc_stride_comp_f);
+    cprintf("run_pool insert %d\n", proc->pid);
 #else
      assert(list_empty(&(proc->run_link)));
      list_add_before(&(rq->run_list), &(proc->run_link));
@@ -86,6 +88,7 @@ stride_dequeue(struct run_queue *rq, struct proc_struct *proc) {
 #if USE_SKEW_HEAP
      rq->lab6_run_pool =
           skew_heap_remove(rq->lab6_run_pool, &(proc->lab6_run_pool), proc_stride_comp_f);
+    cprintf("run_pool remove %d\n", proc->pid);
 #else
      assert(!list_empty(&(proc->run_link)) && proc->rq == rq);
      list_del_init(&(proc->run_link));
@@ -128,8 +131,17 @@ stride_pick_next(struct run_queue *rq) {
      }
 #endif
      if (p->lab6_priority == 0)
+     {
           p->lab6_stride += BIG_STRIDE;
-     else p->lab6_stride += BIG_STRIDE / p->lab6_priority;
+         cprintf("proc %d priority is %d\n", p->pid, p->lab6_priority);
+         cprintf("run_pool pick %d, stride is %u, step size is %d\n", p->pid, p->lab6_stride, BIG_STRIDE);
+     }
+     else
+     {
+         p->lab6_stride += BIG_STRIDE / p->lab6_priority;
+         cprintf("proc %d priority is %d\n", p->pid, p->lab6_priority);
+         cprintf("run_pool pick %d, stride is %u, step size is %d\n", p->pid, p->lab6_stride, BIG_STRIDE / p->lab6_priority);
+     }
      return p;
 }
 
@@ -147,6 +159,7 @@ stride_proc_tick(struct run_queue *rq, struct proc_struct *proc) {
      if (proc->time_slice > 0) {
           proc->time_slice --;
      }
+    cprintf("proc %d tick and the time_slice is %d\n", proc->pid, proc->time_slice);
      if (proc->time_slice == 0) {
           proc->need_resched = 1;
      }

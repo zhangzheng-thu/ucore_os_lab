@@ -499,7 +499,7 @@ do_exit(int error_code) {
         }
     }
     local_intr_restore(intr_flag);
-    
+    cprintf("proc %d do_exit\n", current->pid);
     schedule();
     panic("do_exit will not return!! %d.\n", current->pid);
 }
@@ -694,6 +694,7 @@ execve_exit:
 int
 do_yield(void) {
     current->need_resched = 1;
+    cprintf("proc %d do_yield\n", current->pid);
     return 0;
 }
 
@@ -734,6 +735,7 @@ repeat:
     if (haskid) {
         current->state = PROC_SLEEPING;
         current->wait_state = WT_CHILD;
+        cprintf("proc %d do_wait\n",current->pid);
         schedule();
         if (current->flags & PF_EXITING) {
             do_exit(-E_KILLED);
@@ -768,6 +770,7 @@ do_kill(int pid) {
         if (!(proc->flags & PF_EXITING)) {
             proc->flags |= PF_EXITING;
             if (proc->wait_state & WT_INTERRUPTED) {
+                cprintf("proc %d do_kill\n", proc->pid);
                 wakeup_proc(proc);
             }
             return 0;
