@@ -13,70 +13,70 @@ data bitmap   10000000
 data          [(.,0) (..,0)] [] [] [] [] [] [] [] 
 
 Which operation took place?
-
+在根目录下创建了一个叫“g”的目录
 inode bitmap  11000000
 inodes        [d a:0 r:3] [d a:1 r:2] [] [] [] [] [] [] 
 data bitmap   11000000
 data          [(.,0) (..,0) (g,1)] [(.,1) (..,0)] [] [] [] [] [] [] 
 
 Which operation took place?
-
+在根目录下创建了一个叫“q”的空文件
 inode bitmap  11100000
 inodes        [d a:0 r:4] [d a:1 r:2] [f a:-1 r:1] [] [] [] [] [] 
 data bitmap   11000000
 data          [(.,0) (..,0) (g,1) (q,2)] [(.,1) (..,0)] [] [] [] [] [] [] 
 
 Which operation took place?
-
+在根目录下创建了一个叫“u”的空文件
 inode bitmap  11110000
 inodes        [d a:0 r:5] [d a:1 r:2] [f a:-1 r:1] [f a:-1 r:1] [] [] [] [] 
 data bitmap   11000000
 data          [(.,0) (..,0) (g,1) (q,2) (u,3)] [(.,1) (..,0)] [] [] [] [] [] [] 
 
 Which operation took place?
-
+在根目录下创建了一个叫“x”的“u”的硬链接
 inode bitmap  11110000
 inodes        [d a:0 r:6] [d a:1 r:2] [f a:-1 r:1] [f a:-1 r:2] [] [] [] [] 
 data bitmap   11000000
 data          [(.,0) (..,0) (g,1) (q,2) (u,3) (x,3)] [(.,1) (..,0)] [] [] [] [] [] [] 
 
 Which operation took place?
-
+在根目录下创建了一个叫“t”的目录
 inode bitmap  11111000
 inodes        [d a:0 r:7] [d a:1 r:2] [f a:-1 r:1] [f a:-1 r:2] [d a:2 r:2] [] [] [] 
 data bitmap   11100000
 data          [(.,0) (..,0) (g,1) (q,2) (u,3) (x,3) (t,4)] [(.,1) (..,0)] [(.,4) (..,0)] [] [] [] [] [] 
 
 Which operation took place?
-
+在g目录下创建了一个叫“c”的空文件
 inode bitmap  11111100
 inodes        [d a:0 r:7] [d a:1 r:3] [f a:-1 r:1] [f a:-1 r:2] [d a:2 r:2] [f a:-1 r:1] [] [] 
 data bitmap   11100000
 data          [(.,0) (..,0) (g,1) (q,2) (u,3) (x,3) (t,4)] [(.,1) (..,0) (c,5)] [(.,4) (..,0)] [] [] [] [] [] 
 
 Which operation took place?
-
+在根目录下删除了“x”
 inode bitmap  11111100
 inodes        [d a:0 r:6] [d a:1 r:3] [f a:-1 r:1] [f a:-1 r:1] [d a:2 r:2] [f a:-1 r:1] [] [] 
 data bitmap   11100000
 data          [(.,0) (..,0) (g,1) (q,2) (u,3) (t,4)] [(.,1) (..,0) (c,5)] [(.,4) (..,0)] [] [] [] [] [] 
 
 Which operation took place?
-
+ 在g目录下创建了一个叫“w”的目录
 inode bitmap  11111110
 inodes        [d a:0 r:6] [d a:1 r:4] [f a:-1 r:1] [f a:-1 r:1] [d a:2 r:2] [f a:-1 r:1] [d a:3 r:2] [] 
 data bitmap   11110000
 data          [(.,0) (..,0) (g,1) (q,2) (u,3) (t,4)] [(.,1) (..,0) (c,5) (w,6)] [(.,4) (..,0)] [(.,6) (..,1)] [] [] [] [] 
 
 Which operation took place?
-
+在“c”中写入了内容“o”
 inode bitmap  11111110
 inodes        [d a:0 r:6] [d a:1 r:4] [f a:-1 r:1] [f a:-1 r:1] [d a:2 r:2] [f a:4 r:1] [d a:3 r:2] [] 
 data bitmap   11111000
 data          [(.,0) (..,0) (g,1) (q,2) (u,3) (t,4)] [(.,1) (..,0) (c,5) (w,6)] [(.,4) (..,0)] [(.,6) (..,1)] [o] [] [] [] 
 
 Which operation took place?
-
+ 在根目录下创建了一个叫“n”的空文件
 inode bitmap  11111111
 inodes        [d a:0 r:7] [d a:1 r:4] [f a:-1 r:1] [f a:-1 r:1] [d a:2 r:2] [f a:4 r:1] [d a:3 r:2] [f a:-1 r:1] 
 data bitmap   11111000
