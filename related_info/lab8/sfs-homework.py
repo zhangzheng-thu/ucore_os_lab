@@ -245,36 +245,77 @@ class fs:
 
         inum = self.nameToInum[tfile]
 
-    # YOUR CODE, YOUR ID
+    # YOUR CODE, 2013011418
         # IF inode.refcnt ==1, THEN free data blocks first, then free inode, ELSE dec indoe.refcnt
         # remove from parent directory: delete from parent inum, delete from parent addr
     # DONE
 
         # finally, remove from files list
+        if self.inodes[inum].getRefCnt()==1:
+                    self.data[self.inodes[inum].getAddr()].free()
+                    self.dbitmap.free(self.inodes[inum].getAddr())
+                    self.inodes[inum].free()
+        else:
+            self.inodes[inum].decRefCnt()
+        parent_num=self.nameToInum[self.getParent(tfile)]
+        self.data[self.inodes[parent_num].getAddr()].delDirEntry(tfile)
+        self.inodes[parent_num].decRefCnt()
         self.files.remove(tfile)
+        del self.nameToInum[tfile]
         return 0
 
     def createLink(self, target, newfile, parent):
-    # YOUR CODE, YOUR ID
+    # YOUR CODE, 2013011418
         # find info about parent
+        pa_Inum=self.nameToInum[parent]
+        pa_Addr_num=self.inodes[pa_Inum].getAddr()
         # is there room in the parent directory?
+        if self.data[pa_Addr_num].getFreeEntries()==0:
+            return -1
         # if the newfile was already in parent dir?
+        if self.data[pa_Addr_num].dirEntryExists(newfile):
+            return -1
         # now, find inumber of target
+        tg_Inum=self.nameToInum[target]
+        if tg_Inum<0:
+            return tg_Inum
+        self.inodes[tg_Inum].incRefCnt()
         # inc parent ref count
+        self.data[pa_Inum].addDirEntry(newfile,tg_Inum)
         # now add to directory
     # DONE
         return tinum
 
     def createFile(self, parent, newfile, ftype):
-    # YOUR CODE, YOUR ID
+    # YOUR CODE, 2013011418
         # find info about parent
+        if parent not in self.nameToInum:
+            return -1
+        pa_Inum=self.nameToInum[parent]
         # is there room in the parent directory?
+        if self.data[self.inodes[pa_Inum].getAddr()].getFreeEntries()==0:
+            return -1
         # have to make sure file name is unique
+        if self.data[self.inodes[pa_Inum].getAddr()].dirEntryExists(newfile):
+            return -1
         # find free inode
+        frn_Inum=self.inodeAlloc()
+        if frn_Inum<0:
+            return -1
+        self.inodes[frn_Inum].setType(ftype)
         # if a directory, have to allocate directory block for basic (., ..) info
+        if ftype=='d':
+            frn_addr_num=self.dataAlloc()
+            self.data[frn_addr_num].setType(ftype)
+            self.inodes[frn_Inum].setAll(ftype,frn_addr_num,1)
+            self.data[frn_addr_num].addDirEntry('.',frn_Inum)
+            self.data[frn_addr_num].addDirEntry('..',pa_Inum)
+            self.inodes[frn_Inum].incRefCnt()
         # now ok to init inode properly
         # inc parent ref count
+        self.inodes[pa_Inum].incRefCnt()
         # and add to directory of parent
+        self.data[self.inodes[pa_Inum].getAddr()].addDirEntry(newfile,frn_Inum)
     # DONE
         return inum
 
@@ -283,10 +324,30 @@ class fs:
         curSize = self.inodes[inum].getSize()
         dprint('writeFile: inum:%d cursize:%d refcnt:%d' % (inum, curSize, self.inodes[inum].getRefCnt()))
 
-    # YOUR CODE, YOUR ID
+    # YOUR CODE, 2013011418
         # file is full?
+        if self.inodes[inum].getType()=='f':
+            if curSize==1:
+                return -1
+            data_num=self.dataAlloc()
+            if data_num <0:
+                return -1
         # no data blocks left
         # write file data
+            self.data[data_num].setType('f')
+            self.inodes[inum].setAddr(data_num)
+            self.data[data_num].addData(data)
+        else:
+            d=self.data[self.inodes[inum].getAddr()]
+            assert d.ftype=='s'
+            target=d.data
+            if target not in self.nameToInum:
+                print 'Eroor:%s has been deleted!! writeFile failed!'%target
+                return -1
+            if self.inodes[self.nameTonum[target]].getType()=='free':
+                print 'Error:%s has been deleted! writeFile failed!'%target
+                return -1
+            return self.writeFile(target,data)
     # DONE
 
         if printOps:
